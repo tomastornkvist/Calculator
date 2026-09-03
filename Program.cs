@@ -1,11 +1,11 @@
 ﻿// Reads a number from the commandline and makes sure it's a valid double
-static double ReadNumber()
+static double ReadNumber(string prompt, bool noZero)
 {
     double number;
 
-    Console.Write("Tal: ");
+    Console.Write(prompt);
 
-    while (!double.TryParse(Console.ReadLine(), out number))
+    while (!double.TryParse(Console.ReadLine(), out number) || (noZero && number == 0))
         Console.Write("Du måste ange ett giltigt tal: ");
 
     return number;
@@ -22,28 +22,18 @@ static string ReadOperator()
 
     do
     {
-        switch (op = Console.ReadLine())
-        {
-            case "+":
-            case "-":
-            case "*":
-            case "/":
-            case "%":
-            case "=":
-                correct = true;
-                break;
-
-            default:
-                Console.Write("Du måste ange ett giltigt räknesätt (+ - * / % =): ");
-                break;
-        }
+        op = Console.ReadLine();
+        if (op != null && op.Length == 1 && "+-*/%=".Contains(op))
+            correct = true;
+        else
+            Console.Write("Du måste ange ett giltigt räknesätt (+ - * / % =): ");
     } while (!correct);
 
     return op!;
 }
 
 string op;
-double currentResult = ReadNumber();
+double currentResult = ReadNumber("Tal: ", false);
 
 do
 {
@@ -51,35 +41,31 @@ do
 
     if (op != "=")
     {
-        double number = ReadNumber();
+        double number = ReadNumber("Tal: ", op == "/");
 
         switch (op)
         {
             case "+":
                 currentResult += number;
-                Console.WriteLine($"= {currentResult}");
                 break;
 
             case "-":
                 currentResult -= number;
-                Console.WriteLine($"= {currentResult}");
                 break;
 
             case "*":
                 currentResult *= number;
-                Console.WriteLine($"= {currentResult}");
                 break;
 
             case "/":
                 currentResult /= number;
-                Console.WriteLine($"= {currentResult}");
                 break;
 
             case "%":
                 currentResult %= number;
-                Console.WriteLine($"= {currentResult}");
                 break;
         }
+        Console.WriteLine($"= {currentResult}");
     }
 
 } while (!op.Equals("="));
